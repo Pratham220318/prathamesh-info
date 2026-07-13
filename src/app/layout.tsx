@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fira_Code } from "next/font/google";
-// @ts-ignore: Allow side-effect CSS import without explicit module declarations
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
