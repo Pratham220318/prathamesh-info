@@ -103,7 +103,7 @@ export const portfolioData = {
     {
       company: "Capital Market of Internet Technology",
       role: "Software Developer",
-      duration: "Aug 2023 – Present (2.3+ Years)",
+      duration: "Aug 2023 – Present (3+ Years)",
       description:
         "Leading front-end development, API migrations, and high-performance data visualization tools for financial-grade platforms used by thousands of analysts.",
       highlights: [

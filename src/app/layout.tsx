@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fira_Code } from "next/font/google";
+// @ts-ignore: Allow side-effect CSS import without explicit module declarations
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -16,7 +17,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Prathamesh Ethiraj | Full Stack Developer — React, Next.js, Node.js",
+  title: "Prathamesh - Info",
   description:
     "Professional portfolio of Prathamesh Ethiraj — Full Stack Developer with 4+ years building enterprise web apps & financial software. Expert in React.js, Next.js, Node.js, .NET Core, AWS.",
   keywords: [

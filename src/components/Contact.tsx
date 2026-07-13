@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FaPaperPlane, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt,
@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import { portfolioData } from "@/data/portfolioData";
 import confetti from "canvas-confetti";
+import emailjs from "@emailjs/browser";
 
 const budgetOptions = [
   "Under ₹10,000",
@@ -40,6 +41,12 @@ export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Initialise EmailJS once on mount
+  useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+    if (key) emailjs.init(key);
+  }, []);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -60,29 +67,32 @@ export default function Contact() {
     const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
     const publicKey  = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-    // ── EmailJS path (when keys are configured) ──────────────────────
+    // ── EmailJS path ──────────────────────────────────────────────────
     if (serviceId && templateId && publicKey) {
       try {
-        const { default: emailjs } = await import("@emailjs/browser");
         await emailjs.send(
           serviceId,
           templateId,
           {
-            from_name     : formData.name,
-            from_email    : formData.email,
-            budget        : formData.budget  || "Not specified",
-            timeline      : formData.timeline || "Not specified",
-            message       : formData.projectDetails,
-            to_email      : portfolioData.personalInfo.email,
-          },
-          publicKey
+            from_name : formData.name,
+            from_email: formData.email,
+            budget    : formData.budget   || "Not specified",
+            timeline  : formData.timeline || "Not specified",
+            message   : formData.projectDetails,
+            to_email  : portfolioData.personalInfo.email,
+          }
         );
         setStatus("success");
         confetti({ particleCount: 90, spread: 65, origin: { y: 0.75 }, colors: ["#06b6d4", "#6366f1", "#10b981"] });
         setFormData({ name: "", email: "", budget: "", timeline: "", projectDetails: "" });
         return;
-      } catch {
-        // Fall through to mailto fallback
+      } catch (err: unknown) {
+        console.error("EmailJS error:", err);
+        setStatus("error");
+        setErrorMsg("Failed to send via EmailJS. Falling back to your mail app — please click Send when it opens.");
+        // Small delay so user can read the error, then open mailto
+        await new Promise(r => setTimeout(r, 1800));
+        setStatus("idle");
       }
     }
 
@@ -173,7 +183,7 @@ export default function Contact() {
             ))}
 
             {/* EmailJS setup note */}
-            <div className="rounded-xl p-4 border text-xs space-y-1.5"
+            {/* <div className="rounded-xl p-4 border text-xs space-y-1.5"
               style={{ background: "var(--bg-card)", borderColor: "rgba(6,182,212,0.2)" }}>
               <p className="font-bold text-cyan-400 flex items-center gap-1.5">
                 <FaEnvelope size={10} /> Email delivery
@@ -184,7 +194,7 @@ export default function Contact() {
                   style={{ background: "var(--bg-secondary)" }}>.env.local</code>{" "}
                 for direct background delivery to your Gmail — no mail app needed.
               </p>
-            </div>
+            </div> */}
           </div>
 
           {/* ── Contact Form ── */}
